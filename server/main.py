@@ -1,12 +1,11 @@
+import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import yt_dlp
-import os
-import traceback 
 
 app = FastAPI()
 
-# Enable CORS for frontend access
+# Enable CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  
@@ -30,8 +29,9 @@ async def get_video_details(data: dict):
         ydl_opts = {
             "format": "best",
             "quiet": True,
-            "cookies": "cookies.txt"
+            "cookiefile": "cookies.txt"  # Use your saved cookies
         }
+        
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
 
@@ -44,6 +44,5 @@ async def get_video_details(data: dict):
         return {"success": True, "video": video_details}
     
     except Exception as e:
-        error_trace = traceback.format_exc()
-        print(f"Error: {error_trace}") 
+        print(f"Error: {str(e)}")  # Log the error
         raise HTTPException(status_code=500, detail=f"Error fetching video: {str(e)}")

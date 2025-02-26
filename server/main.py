@@ -25,10 +25,10 @@ async def get_video_details(data: dict):
         raise HTTPException(status_code=400, detail="URL is required")
 
     try:
-        # yt-dlp options
         ydl_opts = {
             "format": "best",
-            "quiet": True
+            "quiet": True,
+            "cookies-from-browser": "chrome"  # Automatically fetch cookies from Chrome
         }
         
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:

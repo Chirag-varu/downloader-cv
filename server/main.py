@@ -3,16 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import yt_dlp
 import os
 
-options = {
-    "format": "best",
-    "cookies": "/cookies.txt"
-}
-
 app = FastAPI()
 
-@app.get("/")
-def home():
-    return {"message": "Hello, FastAPI is working!"}
 # Enable CORS for frontend access
 app.add_middleware(
     CORSMiddleware,
@@ -21,6 +13,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/")
+def home():
+    return {"message": "Hello, FastAPI is working!"}
 
 @app.post("/download")
 async def get_video_details(data: dict):
@@ -31,16 +27,17 @@ async def get_video_details(data: dict):
 
     try:
         ydl_opts = {
-            'format': 'best',
-            'quiet': True
+            "format": "best",
+            "quiet": True,
+            "cookies": "cookies.txt"
         }
-        with yt_dlp.YoutubeDL(options) as ydl:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
 
         video_details = {
-            "title": info["title"],
-            "thumbnail": info["thumbnail"],
-            "download_url": info["url"]  
+            "title": info.get("title", "No title"),
+            "thumbnail": info.get("thumbnail", ""),
+            "download_url": info.get("url", "")
         }
 
         return {"success": True, "video": video_details}

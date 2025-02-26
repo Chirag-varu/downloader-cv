@@ -5,6 +5,9 @@ import os
 
 app = FastAPI()
 
+@app.get("/")
+def home():
+    return {"message": "Hello, FastAPI is working!"}
 # Enable CORS for frontend access
 app.add_middleware(
     CORSMiddleware,

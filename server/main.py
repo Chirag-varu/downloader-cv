@@ -1,4 +1,4 @@
-import os
+import requests
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import yt_dlp
@@ -26,23 +26,37 @@ async def get_video_details(data: dict):
         raise HTTPException(status_code=400, detail="URL is required")
 
     try:
-        ydl_opts = {
-            "format": "best",
-            "quiet": True,
-            "cookiefile": "cookies.txt"  # Use your saved cookies
-        }
+        if "youtube.com" in url or "youtu.be" in url:
+            # Use yt-dlp for YouTube
+            ydl_opts = {
+                "format": "best",
+                "quiet": True
+            }
+            
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(url, download=False)
+
+            video_details = {
+                "title": info.get("title", "No title"),
+                "thumbnail": info.get("thumbnail", ""),
+                "download_url": info.get("url", "")
+            }
+
+            return {"success": True, "platform": "YouTube", "video": video_details}
         
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=False)
+        elif "facebook.com" in url or "fb.watch" in url:
+            # Use GetFvid API for Facebook
+            api_url = f"https://getfvid.com/downloader?url={url}"
+            response = requests.get(api_url)
 
-        video_details = {
-            "title": info.get("title", "No title"),
-            "thumbnail": info.get("thumbnail", ""),
-            "download_url": info.get("url", "")
-        }
+            if response.status_code != 200:
+                raise HTTPException(status_code=500, detail="Failed to fetch Facebook video")
 
-        return {"success": True, "video": video_details}
-    
+            video_info = response.json()
+            return {"success": True, "platform": "Facebook", "video": video_info}
+
+        else:
+            raise HTTPException(status_code=400, detail="Unsupported platform")
+
     except Exception as e:
-        print(f"Error: {str(e)}")  # Log the error
-        raise HTTPException(status_code=500, detail=f"Error fetching video: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")

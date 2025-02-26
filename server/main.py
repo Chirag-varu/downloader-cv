@@ -4,7 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-# Enable CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  
@@ -24,12 +23,23 @@ async def get_video_details(data: dict):
     if not url:
         raise HTTPException(status_code=400, detail="URL is required")
 
+    # Choose correct cookie file based on the URL
+    if "youtube.com" in url or "youtu.be" in url:
+        cookie_file = "cookies.txt"  # YouTube cookies
+    elif "facebook.com" in url or "fb.watch" in url:
+        cookie_file = "cookiefb.txt"  # Facebook cookies
+    else:
+        cookie_file = None  # No cookies for other platforms
+
     try:
         ydl_opts = {
             "format": "best",
             "quiet": True,
-            "cookies-from-browser": "chrome"  # Automatically fetch cookies from Chrome
         }
+
+        # Add cookies if available
+        if cookie_file:
+            ydl_opts["cookiefile"] = cookie_file
         
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
@@ -40,7 +50,7 @@ async def get_video_details(data: dict):
             "download_url": info.get("url", "")
         }
 
-        return {"success": True, "platform": "Detected", "video": video_details}
+        return {"success": True, "video": video_details}
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching video: {str(e)}")

@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import yt_dlp
 import os
+import traceback 
 
 app = FastAPI()
 
@@ -43,4 +44,6 @@ async def get_video_details(data: dict):
         return {"success": True, "video": video_details}
     
     except Exception as e:
+        error_trace = traceback.format_exc()
+        print(f"Error: {error_trace}") 
         raise HTTPException(status_code=500, detail=f"Error fetching video: {str(e)}")

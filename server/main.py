@@ -12,10 +12,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
-def home():
-    return {"message": "Hello, FastAPI is working!"}
-
 @app.post("/download")
 async def get_video_details(data: dict):
     url = data.get("url")
@@ -23,24 +19,23 @@ async def get_video_details(data: dict):
     if not url:
         raise HTTPException(status_code=400, detail="URL is required")
 
-    # Choose correct cookie file based on the URL
-    if "youtube.com" in url or "youtu.be" in url:
-        cookie_file = "cookies.txt"  # YouTube cookies
-    elif "facebook.com" in url or "fb.watch" in url:
-        cookie_file = "cookiefb.txt"  # Facebook cookies
-    else:
-        cookie_file = None  # No cookies for other platforms
-
     try:
+        # Use different cookie files for YouTube and Facebook
+        if "youtube.com" in url or "youtu.be" in url:
+            cookie_file = "cookies.txt"
+        elif "facebook.com" in url or "fb.watch" in url:
+            cookie_file = "cookiefb.txt"
+        else:
+            cookie_file = None  # No cookies for other sites
+
         ydl_opts = {
             "format": "best",
             "quiet": True,
         }
 
-        # Add cookies if available
         if cookie_file:
             ydl_opts["cookiefile"] = cookie_file
-        
+
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
 
@@ -53,4 +48,5 @@ async def get_video_details(data: dict):
         return {"success": True, "video": video_details}
     
     except Exception as e:
+        print(f"Error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error fetching video: {str(e)}")

@@ -15,7 +15,7 @@ interface VideoDetails {
   download_url: string;
 }
 
-export default function VideoDownloader() {
+export default function App() {
   const [videoURL, setVideoURL] = useState("");
   const [videoDetails, setVideoDetails] = useState<VideoDetails | null>(null);
   const [status, setStatus] = useState("");

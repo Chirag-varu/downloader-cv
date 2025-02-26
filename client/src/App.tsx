@@ -31,7 +31,7 @@ export default function App() {
     setStatus("Fetching video details...");
 
     try {
-      const response = await axios.post("http://localhost:5000/download", { url: videoURL }, {
+      const response = await axios.post("https://downloader-cv.onrender.com/download", { url: videoURL }, {
         headers: { "Content-Type": "application/json" },
       });
 

@@ -3,6 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 import yt_dlp
 import os
 
+options = {
+    "format": "best",
+    "cookies": "/cookies.txt"
+}
+
 app = FastAPI()
 
 @app.get("/")
@@ -29,7 +34,7 @@ async def get_video_details(data: dict):
             'format': 'best',
             'quiet': True
         }
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        with yt_dlp.YoutubeDL(options) as ydl:
             info = ydl.extract_info(url, download=False)
 
         video_details = {

@@ -6,6 +6,8 @@ A simple and efficient app to **download YouTube & Facebook videos** effortlessl
 ✅ Download videos from **YouTube & Facebook**  
 ✅ Easy-to-use interface  
 
+![Screenshot (108)](https://github.com/user-attachments/assets/49bee75c-d058-404d-a806-368cea9df567)
+
 ## 🛠 Tech Stack  
 - **Frontend:** Next.js (TypeScript), axios, framer-motion
 - **Backend:** Python  

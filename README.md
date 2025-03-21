@@ -7,7 +7,7 @@ A simple and efficient app to **download YouTube & Facebook videos** effortlessl
 ✅ Easy-to-use interface  
 
 ## 🛠 Tech Stack  
-- **Frontend:** Next.js (TypeScript)  
+- **Frontend:** Next.js (TypeScript), axios, framer-motion
 - **Backend:** Python  
 
 ## 🔧 How to Use  
